@@ -11,10 +11,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cookie">
     <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
     <link rel="stylesheet" href="assets/fonts/simple-line-icons.min.css">
-    <link rel="stylesheet" href="assets/css/dx.common.css">
-    <link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/20.2.3/css/dx.light.css">
-    <link rel="stylesheet" href="assets/css/Pretty-Footer.css">
     <link rel="stylesheet" href="assets/css/styles.css">
+    <link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/20.2.3/css/dx.light.compact.css">
 <!-- msal.min.js can be used in the place of msal.js; included msal.js to make debug easy -->
     <script src="https://alcdn.msauth.net/browser/2.1.0/js/msal-browser.js"
         integrity="sha384-M9bRB06LdiYadS+F9rPQnntFCYR3UJvtb2Vr4Tmhw9WBwWUfxH8VDRAFKNn3VTc/"
@@ -24,9 +22,19 @@
     <script type="text/javascript">
         if ( typeof Msal === 'undefined' ) document.write( unescape( "%3Cscript src='https://alcdn.msftauth.net/browser/2.1.0/js/msal-browser.js' type='text/javascript' crossorigin='anonymous' %3E%3C/script%3E" ) );
     </script>
+
+<script src="https://unpkg.com/@microsoft/mgt/dist/bundle/mgt-loader.js"></script>
+<mgt-msal-provider client-id="30ce4608-5ead-46e3-8d90-f5d8c0d41d36"></mgt-msal-provider>
 </head>
 
 <body>
+    <div id="loader">
+        <div class="d-xl-flex justify-content-xl-center align-items-xl-center"><img id="loadingGIF" src="assets/img/plantIcon.png"></div>
+        <div class="d-xl-flex justify-content-xl-center align-items-xl-center">
+            <h4 class="text-center text-light mt-auto">Downtime Planner</h4>
+        </div>
+        <div class="d-xl-flex justify-content-xl-center"><img src="assets/img/loading-13.gif"></div>
+    </div>
     <nav class="navbar navbar-light navbar-expand-md bg-light">
         <div class="container-fluid"><a class="navbar-brand" href="index.html"><img class="rounded-circle" src="assets/img/plantIcon.png" width="45px"><h3>Downtime Planner</h3><br></a></div>
     </nav>
@@ -40,11 +48,8 @@
 </svg></a></li>
                     <li class="nav-item"><a class="nav-link active" href="#">Tabler Station</a></li>
                 </ul>
-            </div><img class="rounded-circle dropdown-toggle" id="userImage" src="assets/img/12046646_10153841412209954_6406664853125670859_n.jpg" width="35px" data-toggle="dropdown" aria-expanded="false">
-            <div class="dropdown"><a class="dropdown-toggle" data-toggle="dropdown" aria-expanded="false" id="userName" href="#">Scott Johnson</a>
-                <div class="dropdown-menu"><a class="dropdown-item" href="#" onclick="signOut()">Logout<i class="fa fa-sign-out logout"></i></a></div>
-            </div>
-        </div>
+            </div><mgt-login show-presence class="styled-person"> </mgt-login>
+</div>
     </nav>
     <ol class="breadcrumb" style="padding-left: 40px;padding-top: 20px;">
         <li class="breadcrumb-item active"><span>Home</span></li>
@@ -92,19 +97,11 @@
     </div>
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/cldr.js"></script>
-    <script src="assets/js/cldr.event.js"></script>
-    <script src="assets/js/globalize.js"></script>
-    <script src="assets/js/number.min.js"></script>
-    <script src="assets/js/globalize.currency.js"></script>
-    <script src="assets/js/globalize.date.js"></script>
-    <script src="assets/js/globalize.message.js"></script>
     <script src="assets/js/dx.all.js"></script>
-    <script src="assets/js/app.js"></script>
-    <script src="assets/js/authConfig.js"></script>
-    <script src="assets/js/authRedirect.js"></script>
-    <script src="assets/js/graph.js"></script>
-    <script src="assets/js/graphConfig.js"></script>
+    <script src="assets/js/moment.js"></script>
+    <script src="assets/js/index.js"></script>
+    <script src="assets/js/view.js"></script>
+    <script src="assets/js/request.js"></script>
 </body>
 
 </html>

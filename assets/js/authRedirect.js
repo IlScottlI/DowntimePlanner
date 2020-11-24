@@ -37,7 +37,25 @@ function handleResponse(resp) {
 }
 
 function signIn() {
-  myMSALObj.loginRedirect(loginRequest);
+  async function f() {
+
+    let promise = new Promise((resolve, reject) => {
+      try {
+        resolve(myMSALObj.loginRedirect(loginRequest));
+      } catch (error) {
+
+      }
+    });
+
+    await promise.then(() => {
+      seeProfile();
+    }); // wait until the promise resolves (*)
+
+
+  }
+
+  f();
+
 }
 
 function signOut() {
@@ -68,8 +86,16 @@ function getTokenRedirect(request) {
 function seeProfile() {
   getTokenRedirect(loginRequest).then(response => {
     callMSGraph(graphConfig.graphMeEndpoint, response.accessToken, updateUI);
-    profileButton.classList.add('d-none');
-    mailButton.classList.remove('d-none');
+    // profileButton.classList.add('d-none');
+    // mailButton.classList.remove('d-none');
+  }).catch(error => {
+    console.error(error);
+  });
+}
+
+function seeProfilePhoto() {
+  getTokenRedirect(loginRequest).then(response => {
+    callMSGraph(graphConfig.graphMePhotoEndpoint, response.accessToken, updateUI);
   }).catch(error => {
     console.error(error);
   });
@@ -158,8 +184,6 @@ function loopList(listURL) {
     });
   });
 }
-
-signIn();
 
 function buildTable() {
   try {
@@ -356,7 +380,8 @@ function buildTable() {
 async function f() {
 
   let promise = new Promise((resolve, reject) => {
-    setTimeout(() => resolve("done!"), 1000)
+    setTimeout(() => resolve("done!"), 1000);
+    signIn();
   });
 
   let result = await promise; // wait until the promise resolves (*)

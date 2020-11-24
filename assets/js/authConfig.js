@@ -5,7 +5,7 @@ const msalConfig = {
     auth: {
         clientId: "30ce4608-5ead-46e3-8d90-f5d8c0d41d36",
         authority: "https://login.microsoftonline.com/3596192b-fdf5-4e2c-a6fa-acb706c963d8",
-        redirectUri: "https://tablerstation.us/Downtime/app/",
+        redirectUri: "https://tablerstation.us/DowntimePlanner/",
     },
     cache: {
         cacheLocation: "sessionStorage", // This configures where your cache will be stored
@@ -38,7 +38,7 @@ const msalConfig = {
 
 // Add here the scopes that you would like the user to consent during sign-in
 const loginRequest = {
-    scopes: ["User.Read", "People.Read"]
+    scopes: ["User.Read"]
 };
 
 // Add here the scopes to request when obtaining an access token for MS Graph API
