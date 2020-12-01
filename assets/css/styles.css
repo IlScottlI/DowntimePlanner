@@ -62,7 +62,6 @@ body {
 
 .card.cardBtn {
   cursor: pointer;
-  width: 200px;
 }
 
 .card.cardBtn h4 {
@@ -3983,7 +3982,9 @@ body {
   position: absolute;
   z-index: 1000;
   width: 100%;
-  height: 100%;
+  display: block;
+  height: -webkit-fill-available !important;
+  /*display: none;*/
 }
 
 .task-info {
@@ -4058,5 +4059,250 @@ body {
 
 .option > span {
   margin-right: 10px;
+}
+
+body::-webkit-scrollbar {
+  width: 0em;
+}
+
+body::-webkit-scrollbar-track {
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+body::-webkit-scrollbar-thumb {
+  background-color: darkgrey;
+  outline: 1px solid slategrey;
+}
+
+.dx-menu-item-content span {
+  margin-right: 5px;
+}
+
+.dx-menu-item-has-submenu .dx-icon-spinright {
+  position: absolute;
+  top: 7px;
+  right: 2px;
+}
+
+.item-badge {
+  text-align: center;
+  float: left;
+  margin-right: 12px;
+  color: white;
+  width: 18px;
+  height: 18px;
+  font-size: 19.5px;
+  border-radius: 18px;
+  margin-top: 2px;
+}
+
+.select2-container--default .select2-selection--multiple .select2-selection__choice {
+  background-color: #e9ecef;
+  border: none;
+  border-radius: 4px;
+  display: inline-block;
+  margin-left: 5px;
+  margin-top: 5px;
+  padding: 1px;
+  font-size: 12px;
+}
+
+mgt-people-picker {
+  --input-border: none;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  position: relative;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+.b {
+  display: block;
+}
+
+.toggle {
+  position: absolute;
+  top: 70%;
+  left: 50%;
+  width: 55px;
+  height: 25px;
+  border-radius: 10px;
+  background-color: #ddd;
+  margin: -20px -40px;
+  overflow: hidden;
+  box-shadow: inset 0 0 2px 1px rgba(0, 0, 0, 0.05);
+}
+
+.check {
+  position: absolute;
+  display: block;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 0;
+  z-index: 6;
+}
+
+.check:checked ~ .track {
+  box-shadow: inset 0 0 0 20px #4bd863;
+}
+
+.check:checked ~ .switch {
+  right: 2px;
+  left: 22px;
+  transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  transition-property: left, right;
+  transition-delay: 0.05s, 0s;
+}
+
+.switch {
+  position: absolute;
+  left: 2px;
+  top: 2px;
+  bottom: 2px;
+  right: 22px;
+  background-color: #fff;
+  border-radius: 10px;
+  z-index: 1;
+  transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  transition-property: left, right;
+  transition-delay: 0s, 0.05s;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+.track {
+  position: absolute;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+  box-shadow: inset 0 0 0 2px rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+.check:checked ~ .track {
+  box-shadow: inset 0 0 0 20px #007bff;
+}
+
+#repeatRow {
+  transition-delay: 0s, 0.05s;
+  transition: 0.35s cubic-bezier(0.785, 0.135, 0.15, 0.86);
+}
+
+#toastPanel {
+  position: absolute;
+  z-index: 100;
+  width: 30%;
+  right: 10px;
+  top: 10px;
+}
+
+.toast {
+  max-width: 600px;
+}
+
+input[type="number"]::-webkit-inner-spin-button {
+  opacity: 1;
+}
+
+.inline-group {
+  max-width: 9rem;
+  padding: 0.5rem;
+}
+
+.inline-group .form-control {
+  text-align: right;
+}
+
+input[type="datetime-local" i] {
+  background-color: #fff;
+  border-radius: 4px;
+  color: #444;
+  border: 1px solid #aaaaaa;
+  line-height: 28px;
+  height: 36px;
+  padding: 4px 0px 4px 4px;
+}
+
+@media (max-width: 900px) {
+  .card-title {
+    font-size: 12px;
+  }
+}
+
+.form-control-sm {
+  height: calc(1.5em + 0.5rem + 2px);
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  line-height: 1.5;
+  border-radius: 0.2rem;
+}
+
+input[type="date"] {
+  position: relative;
+  background-color: white;
+  border: 1px solid #aaa;
+  border-radius: 4px;
+}
+
+/* create a new arrow, because we are going to mess up the native one
+see "List of symbols" below if you want another, you could also try to add a font-awesome icon.. */
+
+input[type="date"]:after {
+  content: "\25BC";
+  color: #555;
+  padding: 0 5px;
+}
+
+/* change color of symbol on hover */
+
+input[type="date"]:hover:after {
+  color: #007bff;
+}
+
+/* make the native arrow invisible and stretch it over the whole field so you can click anywhere in the input field to trigger the native datepicker */
+
+input[type="date"]::-webkit-calendar-picker-indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  width: auto;
+  height: auto;
+  color: transparent;
+  background: transparent;
+}
+
+/* adjust increase/decrease button */
+
+input[type="date"]::-webkit-inner-spin-button {
+  z-index: 1;
+}
+
+/* adjust clear button */
+
+input[type="date"]::-webkit-clear-button {
+  z-index: 1;
+}
+
+input[type="datetime-local" i] {
+  background-color: #fff;
+  border-radius: 4px;
+  color: #444;
+  border: 1px solid #aaaaaa;
+  line-height: 28px;
+  height: 36px;
+  padding: 4px 0px 4px 4px;
+  width: 100% !important;
 }
 

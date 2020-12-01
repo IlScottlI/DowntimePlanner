@@ -54,39 +54,47 @@
             </div><mgt-login show-presence class="styled-person"> </mgt-login>
 </div>
     </nav>
-    <div class="row cardRow mt-5">
-        <div class="col-md-5 col-lg-2 col-xl-2 offset-md-1 offset-lg-1 offset-xl-1 mt-2">
-            <div class="card cardBtn">
-                <div class="card-body" onclick="window.open(`request.html`,`_self`);">
-                    <h6 class="text-nowrap d-lg-flex justify-content-lg-center align-items-lg-center card-title"><i class="fa fa-plus d-inline-block" style="color: #96938e;"></i>&nbsp; New Request</h6>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-5 col-lg-2 col-xl-2 mt-2">
-            <div class="card cardBtn">
-                <div class="card-body d-lg-flex d-xl-flex justify-content-lg-center justify-content-xl-center align-items-xl-center" onclick="window.open(`view.html`,`_self`);">
-                    <h6 class="text-nowrap text-center d-lg-flex align-items-lg-center card-title"><i class="fa fa-bars" style="color: #96938e;"></i>&nbsp; View Requests</h6>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 col-lg-2 col-xl-2 offset-md-0 mt-2">
-            <div class="card cardBtn" disabled="">
-                <div class="card-body d-xl-flex justify-content-xl-center align-items-xl-center" onclick="window.open(`scheduler.html`,`_self`);">
-                    <h6 class="text-nowrap text-center d-lg-flex justify-content-lg-center align-items-lg-center card-title"><i class="fa fa-calendar" style="color: #96938e;"></i>&nbsp; DT Calendar</h6>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 col-lg-2 col-xl-2 mt-2">
-            <div class="card cardBtn">
-                <div class="card-body d-xl-flex justify-content-xl-center align-items-xl-center">
-                    <h6 class="text-nowrap text-center d-lg-flex justify-content-lg-center align-items-lg-center card-title"><i class="fa fa-bar-chart" style="color: #96938e;"></i>&nbsp; DT Dashboard</h6>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-4 col-lg-2 col-xl-2 mt-2">
-            <div class="card cardBtn">
-                <div class="card-body d-xl-flex justify-content-xl-center align-items-xl-center">
-                    <h6 class="text-nowrap text-center d-lg-flex justify-content-lg-center align-items-lg-center card-title"><span class="badge badge-secondary">0</span>&nbsp; Approvals</h6>
+    <div class="container-fluid twenty" style="margin-top: -15px;">
+        <div>
+            <ul class="nav nav-tabs" role="tablist">
+                <li class="nav-item" role="presentation"><a class="nav-link" role="tab" data-toggle="tab" href="view.html" onclick="$(`#loader`).show(); window.location = &#39;view.html&#39;">Timeline View</a></li>
+                <li class="nav-item" role="presentation"><a class="nav-link active" role="tab" data-toggle="tab" href="#tab-2">Calendar View</a></li>
+            </ul>
+            <div class="tab-content">
+                <div class="tab-pane active bg-white" role="tabpanel" id="tab-2">
+                    <div class="card">
+                        <div class="card-header">
+                            <div class="row small">
+                                <div class="col-xl-1"><label class="small">Status</label>
+                                    <div class="form-group"><select class="custom-select custom-select-sm small viewFilter" id="filter-status-1" style="border-style: initial;"></select></div>
+                                </div>
+                                <div class="col-xl-1"><label class="small">Type&nbsp;</label>
+                                    <div class="form-group"><select class="custom-select custom-select-sm small viewFilter" id="filter-type" style="border-style: initial;max-height: 2rem !important;"></select></div>
+                                </div>
+                                <div class="col-xl-2"><label class="small">Downtime Reason</label>
+                                    <div class="form-group"><select class="custom-select custom-select-sm small viewFilter" id="filter-reason" style="border-style: initial;max-height: 2rem !important;"></select></div>
+                                </div>
+                                <div class="col-xl-2"><label class="small">Business</label>
+                                    <div class="form-group"><select class="custom-select custom-select-sm small viewFilter" id="filter-business" style="border: none;"></select></div>
+                                </div>
+                                <div class="col-xl-2"><label class="small">Module</label>
+                                    <div class="form-group"><select class="custom-select custom-select-sm viewFilter" id="filter-module" style="border: none;"></select></div>
+                                </div>
+                                <div class="col-xl-2"><label class="small">Department</label>
+                                    <div class="form-group"><select class="custom-select custom-select-sm viewFilter" id="filter-department" style="border: none;"></select></div>
+                                </div>
+                                <div class="col-xl-2"><label class="small">Area</label>
+                                    <div class="form-group"><select class="custom-select custom-select-sm viewFilter" id="filter-area" style="border: none;"></select></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body">
+                            <div class="right-side">
+                                <div id="selectStatus"></div>
+                            </div>
+                            <div id="scheduler"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
