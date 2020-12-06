@@ -8,6 +8,7 @@
     <link rel="icon" type="image/png" sizes="100x100" href="assets/img/plantIcon.png">
     <link rel="icon" type="image/png" sizes="100x100" href="assets/img/plantIcon.png">
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;700&amp;display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cookie">
     <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
     <link rel="stylesheet" href="assets/fonts/simple-line-icons.min.css">
@@ -15,11 +16,14 @@
     <link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/20.2.3/css/dx.light.compact.css">
     <link rel="stylesheet" href="assets/css/select2.min.css">
     <link rel="stylesheet" href="assets/css/untitled.css">
+    <link rel="stylesheet" href="assets/css/daterangepicker.css">
 <!-- msal.min.js can be used in the place of msal.js; included msal.js to make debug easy -->
     <script src="https://alcdn.msauth.net/browser/2.1.0/js/msal-browser.js"
         integrity="sha384-M9bRB06LdiYadS+F9rPQnntFCYR3UJvtb2Vr4Tmhw9WBwWUfxH8VDRAFKNn3VTc/"
         crossorigin="anonymous"></script>
 
+
+</script>
     <!-- msal.js with a fallback to backup CDN -->
     <script type="text/javascript">
         if ( typeof Msal === 'undefined' ) document.write( unescape( "%3Cscript src='https://alcdn.msftauth.net/browser/2.1.0/js/msal-browser.js' type='text/javascript' crossorigin='anonymous' %3E%3C/script%3E" ) );
@@ -34,12 +38,12 @@
     <div id="loader" class="h-100">
         <div class="text-center d-xl-flex justify-content-xl-center align-items-xl-center"><img id="loadingGIF-1" src="assets/img/plantIcon.png"></div>
         <div class="d-xl-flex justify-content-xl-center align-items-xl-center">
-            <h4 class="text-center text-light mt-auto">Downtime Planner</h4>
+            <h4 class="text-center text-light mt-auto appTitle">Downtime Planner</h4>
         </div>
         <div class="text-center d-xl-flex justify-content-xl-center"><img src="assets/img/loading-13.gif"></div>
     </div>
     <nav class="navbar navbar-light navbar-expand-md bg-light">
-        <div class="container-fluid"><a class="navbar-brand" href="index.html"><img class="rounded-circle" src="assets/img/plantIcon.png" width="45px"><h3>Downtime Planner</h3><br></a></div>
+        <div class="container-fluid"><a class="navbar-brand" href="index.html"><img class="rounded-circle" src="assets/img/plantIcon.png" width="45px"><h3 class="appTitle">Downtime Planner</h3><br></a></div>
     </nav>
     <nav class="navbar navbar-dark navbar-expand-md bg-dark">
         <div class="container-fluid"><a class="navbar-brand" href="index.html"><i class="icon-home"></i></a>
@@ -51,6 +55,16 @@
 </svg></a></li>
                     <li class="nav-item"><a class="nav-link active" id="plantName" href="switcher.html"></a></li>
                 </ul>
+                <ul class="nav navbar-nav mx-auto" id="links">
+                    <li class="nav-item"><a class="nav-link newRequest" href="request.html">New Request</a></li>
+                    <li class="nav-item"><a class="nav-link viewRequest" href="view.html">View Requests</a></li>
+                    <li class="nav-item"><a class="nav-link active dtCalendar" href="scheduler.html">DT Calendar</a></li>
+                    <li class="nav-item"><a class="nav-link dtDashboard" href="#">DT Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link approvals" href="#"><span class="badge badge-light approvalCount">0</span>&nbsp; Approvals</a></li>
+                </ul>
+            </div>
+            <div class="dropdown mx-auto"><a class="dropdown-toggle text-light" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-language mr-2" style="color: #fefefe;"></i></a>
+                <div class="dropdown-menu" id="langMenu"></div>
             </div><mgt-login show-presence class="styled-person"> </mgt-login>
 </div>
     </nav>
@@ -65,25 +79,25 @@
                     <div class="card">
                         <div class="card-header">
                             <div class="row small">
-                                <div class="col-xl-1"><label class="small">Status</label>
+                                <div class="col-xl-1"><label class="small status">Status</label>
                                     <div class="form-group"><select class="custom-select custom-select-sm small viewFilter" id="filter-status-1" style="border-style: initial;"></select></div>
                                 </div>
-                                <div class="col-xl-1"><label class="small">Type&nbsp;</label>
+                                <div class="col-xl-1"><label class="small type">Type&nbsp;</label>
                                     <div class="form-group"><select class="custom-select custom-select-sm small viewFilter" id="filter-type" style="border-style: initial;max-height: 2rem !important;"></select></div>
                                 </div>
-                                <div class="col-xl-2"><label class="small">Downtime Reason</label>
+                                <div class="col-xl-2"><label class="small dtReason">Downtime Reason</label>
                                     <div class="form-group"><select class="custom-select custom-select-sm small viewFilter" id="filter-reason" style="border-style: initial;max-height: 2rem !important;"></select></div>
                                 </div>
-                                <div class="col-xl-2"><label class="small">Business</label>
+                                <div class="col-xl-2"><label class="small business">Business</label>
                                     <div class="form-group"><select class="custom-select custom-select-sm small viewFilter" id="filter-business" style="border: none;"></select></div>
                                 </div>
-                                <div class="col-xl-2"><label class="small">Module</label>
+                                <div class="col-xl-2"><label class="small module">Module</label>
                                     <div class="form-group"><select class="custom-select custom-select-sm viewFilter" id="filter-module" style="border: none;"></select></div>
                                 </div>
-                                <div class="col-xl-2"><label class="small">Department</label>
+                                <div class="col-xl-2"><label class="small department">Department</label>
                                     <div class="form-group"><select class="custom-select custom-select-sm viewFilter" id="filter-department" style="border: none;"></select></div>
                                 </div>
-                                <div class="col-xl-2"><label class="small">Area</label>
+                                <div class="col-xl-2"><label class="small area">Area</label>
                                     <div class="form-group"><select class="custom-select custom-select-sm viewFilter" id="filter-area" style="border: none;"></select></div>
                                 </div>
                             </div>
@@ -101,13 +115,18 @@
     </div>
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/dx.all.js"></script>
     <script src="assets/js/moment.js"></script>
+    <script src="assets/js/daterangepicker.min.js"></script>
+    <script src="assets/js/lang.js"></script>
+    <script src="assets/js/dx.all.js"></script>
+    <script src="assets/js/dx.messages.ru.js"></script>
+    <script src="assets/js/dx.messages.de.js"></script>
     <script src="assets/js/select2.full.min.js"></script>
     <script src="assets/js/index.js"></script>
     <script src="assets/js/data.js"></script>
     <script src="assets/js/request.js"></script>
     <script src="assets/js/view.js"></script>
+    <script src="assets/js/switcher.js"></script>
 </body>
 
 </html>

@@ -1,4 +1,5 @@
 var code = 0;
+var lang = '';
 var userName = "";
 var lists = [];
 var plants = [];
@@ -17,6 +18,23 @@ var userProfile = {};
 var dayOfWeekNames = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
 var selectedPlantId;
 var selectedPlant;
+var langs = [];
+var langs_datePicker = [];
+var langMenuItems = [];
+
+
+var langListURL = 'https://graph.microsoft.com/v1.0/sites/892fe68e-73b7-4e17-9605-d2ac73dc2b3a,9e6927cb-2f3e-4189-8f92-f6733f30ff3b/lists/57b4fca1-69b5-4e6a-a7c5-312f55425817/items';
+
+var loadChecker = setInterval(() => {
+    initlizeLanguage(localStorage.getItem('lang'));
+    if ($("#loader").css("display") == 'none') {
+        clearInterval(loadChecker);
+    }
+}, 1)
+
+$(document).ready(() => {
+    $('#goBtn').text(getTerm('goBtn'))
+})
 
 var meURL = "https://graph.microsoft.com/v1.0/me/";
 var siteListsURL =
@@ -30,6 +48,7 @@ var plantListURL,
     reasonsListURL,
     statusListURL,
     downtimeListURL;
+
 
 var URL = downtimeListURL + "?expand=fields&$orderby=fields/Created desc";
 var downtimeStore = new DevExpress.data.CustomStore({
@@ -113,6 +132,7 @@ function checkToken() {
                 document.querySelector("mgt-login").shadowRoot.querySelector("div > div > button").click();
             }
             getPlants(token);
+            getLanguage(token);
         },
     }).done(function (response) {
         if (selectedPlantId) {
@@ -182,20 +202,59 @@ async function getPlants(token) {
                     id: element.fields.id,
                     name: element.fields.Title,
                     text: element.fields.Title,
+                    lang: element.fields.lang
                 });
             });
             sessionStorage.setItem("plants", JSON.stringify(plants));
-            let $plantSelected = $('#plantSelector').select2({ data: plants, minimumResultsForSearch: Infinity });
+            let $plantSelected = $('#plantSelector').select2({ language: lang, data: plants, minimumResultsForSearch: Infinity });
             $('#plantSelector').val(selectedPlantId).trigger("change");
             $plantSelected.on("select2:close", function (e) { validatePlantSelected() });
-            $("#loader").hide();
+            setTimeout(() => {
+                $("#loader").hide();
+            }, 500);
         })
         .catch((e) => { alertToast(e, 'Plants SharePoint List', 'error') })
 }
 
+async function getLanguage(token) {
+    await loadJson(`${langListURL}?expand=fields&$top=1000`, {
+        headers: { authorization: token },
+    })
+        .then((res) => {
+            res.value.forEach((element) => {
+                langMenuItems.push({ langCode: element.fields.Title, language: element.fields.language })
+                let JSON_Data = JSON.parse(element.fields.JSON_Data);
+                try {
+                    let datePickerJSON = JSON.parse(element.fields.datePicker)
+                    langs_datePicker.push({ langCode: element.fields.Title, locale: datePickerJSON.locale });
+                } catch (error) {
+
+                }
+                JSON_Data.forEach((e) => {
+                    langs.push({
+                        term: e.term,
+                        Title: e.enTrans,
+                        langCode: e.langCode,
+                        translated: e.translated,
+                    });
+                })
+            });
+            sessionStorage.setItem("langs", JSON.stringify(langs));
+            $('#langMenu').text('')
+            langMenuItems.forEach((e) => {
+                $('#langMenu').append(`<a class="dropdown-item text-primary lang" id="${e.langCode}" onClick="initlizeLanguage('${e.langCode}'); window.location = ''; console.log('${e.langCode}')">${e.language}</a>`)
+            })
+        })
+        .catch((e) => { alertToast(e, 'Language SharePoint List', 'error') })
+}
 function setPlant() {
     sessionStorage.clear();
     selectedPlantId = $('#plantSelector').val();
+    plants.forEach((e) => {
+        if ($('#plantSelector').val() == e.id) {
+            localStorage.setItem('lang', e.lang)
+        }
+    })
     localStorage.setItem('selectedPlantId', $('#plantSelector').val());
     window.location = 'index.html';
 }
@@ -259,6 +318,7 @@ async function onStart(response, token, selectedPlantId) {
                             id: element.fields.id,
                             name: element.fields.Title,
                             text: element.fields.Title,
+                            lang: element.fields.lang
                         });
                     });
                     sessionStorage.setItem("plants", JSON.stringify(plants));
@@ -436,7 +496,9 @@ async function onStart(response, token, selectedPlantId) {
             buildSchedule(),
             plants.forEach((e) => { if (e.id == selectedPlantId) { $('#plantName').text(e.name) } }),
             buildFilters(),
-            $("#loader").hide(),
+            setTimeout(() => {
+                $("#loader").hide();
+            }, 500)
         ]);
     }
     else {
@@ -446,7 +508,9 @@ async function onStart(response, token, selectedPlantId) {
         buildFilters();
         buildTable();
         buildSchedule();
-        $("#loader").hide();
+        setTimeout(() => {
+            $("#loader").hide();
+        }, 500);
 
     }
 }
@@ -464,10 +528,63 @@ function initlizeComboBoxes() {
     $('.viewFilter').on('change', () => {
         buildTable();
     })
+    initlizeLanguage(localStorage.getItem('lang'));
+
+}
+
+$('.approvals').html(`<span class="badge badge-light approvalCount">0</span>  Approvals`);
+$('.approvalCount').text(2);
+
+$('.lang').on('click', (e) => {
+    initlizeLanguage(e.target.id);
+    window.location = ''
+})
+
+
+function initlizeLanguage(code) {
+    localStorage.setItem('lang', code);
+    $('.lang').removeClass("text-primary");
+    DevExpress.localization.locale(code);
+    DevExpress.localization.loadMessages({
+        "en": {
+            "appTitle": "Downtime Planner"
+        },
+        "de": {
+            "appTitle": "Ausfallzeit Planer"
+        },
+        "ru": {
+            "appTitle": "Планировщик простоев"
+        }
+    });
+    $(".appTitle").text(DevExpress.localization.formatMessage("appTitle"));
+    $("title").text(DevExpress.localization.formatMessage("appTitle"));
+    $(`#${code}`).addClass("text-primary");
+}
+
+function getTerm(term) {
+    let code = localStorage.getItem('lang')
+    let translated
+    langs.forEach((e) => {
+        if (e.term == term & e.langCode == code) {
+            translated = e.translated
+        }
+    })
+    return translated
+}
+function getPickerTerm() {
+    let locale
+    let code = localStorage.getItem('lang')
+    langs_datePicker.forEach((e) => {
+        if (e.langCode == code) {
+            locale = e
+        }
+    })
+    return locale
 }
 
 function initlizeMaxRows() {
     $("#filter-maxRows").select2({
+        language: lang,
         multiple: false,
         minimumResultsForSearch: Infinity
     });
@@ -476,6 +593,7 @@ function initlizeMaxRows() {
 function initlizeStatus() {
     try {
         $("#filter-status-1").select2({
+            language: lang,
             data: statuses,
             multiple: true,
             maximumSelectionLength: 1
@@ -486,6 +604,7 @@ function initlizeStatus() {
 function initlizeType() {
     try {
         $("#typeSelect").select2({
+            language: lang,
             data: types,
             multiple: true,
             maximumSelectionLength: 1
@@ -493,6 +612,7 @@ function initlizeType() {
     } catch (error) { }
     try {
         $("#filter-type").select2({
+            language: lang,
             data: types,
             multiple: true,
             maximumSelectionLength: 1
@@ -505,6 +625,7 @@ function initlizeType() {
 function initlizeReason() {
     try {
         $("#reasonSelect").select2({
+            language: lang,
             data: reasons,
             multiple: true,
             maximumSelectionLength: 1
@@ -512,6 +633,7 @@ function initlizeReason() {
     } catch (error) { }
     try {
         $("#filter-reason").select2({
+            language: lang,
             data: reasons,
             multiple: true,
             maximumSelectionLength: 1
@@ -522,6 +644,7 @@ function initlizeReason() {
 function initlizeBusinesses() {
     try {
         $("#buSelect").select2({
+            language: lang,
             data: businesses,
             multiple: true,
         });
@@ -533,6 +656,7 @@ function initlizeBusinesses() {
     } catch (error) { }
     try {
         $("#filter-business").select2({
+            language: lang,
             data: businesses,
             multiple: true,
         });
@@ -559,6 +683,7 @@ function initlizeModules() {
             });
         });
         $("#moduleSelect").select2({
+            language: lang,
             data: selectedModules,
             multiple: true,
         });
@@ -580,6 +705,7 @@ function initlizeModules() {
             });
         });
         $("#filter-module").select2({
+            language: lang,
             data: selectedModules,
             multiple: true,
         });
@@ -605,6 +731,7 @@ function initlizeDepartments() {
             });
         });
         $("#deptSelect").select2({
+            language: lang,
             data: selectedDepartments,
             multiple: true,
         });
@@ -625,6 +752,7 @@ function initlizeDepartments() {
             });
         });
         $("#filter-department").select2({
+            language: lang,
             data: selectedDepartments,
             multiple: true,
         });
@@ -649,6 +777,7 @@ function initlizeAreas() {
             });
         });
         $("#areaSelect").select2({
+            language: lang,
             data: selectedAreas,
             multiple: true,
         });
@@ -667,6 +796,7 @@ function initlizeAreas() {
             });
         });
         $("#filter-area").select2({
+            language: lang,
             data: selectedAreas,
             multiple: true,
         });

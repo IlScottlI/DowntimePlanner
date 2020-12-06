@@ -55,7 +55,7 @@ var store = new DevExpress.data.CustomStore({
 
             switch (window.location.pathname) {
                 case "/DowntimePlanner/scheduler.html":
-                    urlString = `${downtimeListURL}?expand=fields&$filter=fields/plantId eq '${selectedPlantId}'${statusIds}${reasonIds}${typeIds} and fields/endDate gt '${startDate}' and fields/startDate lt '${endDate}' or startswith(fields/recurrenceRule,'FREQ')${statusIds}${reasonIds}${typeIds}`;
+                    urlString = `${downtimeListURL}?expand=fields&$filter=fields/plantId eq '${selectedPlantId}'${statusIds}${reasonIds}${typeIds} and fields/endDate gt '${startDate}' and fields/startDate lt '${endDate}' or startswith(fields/recurrenceRule,'FREQ')${statusIds}${reasonIds}${typeIds} and fields/plantId eq '${selectedPlantId}'`;
                     break;
 
                 default:
@@ -237,7 +237,9 @@ var store = new DevExpress.data.CustomStore({
             },
             timeout: 5000,
         });
-        $("#loader").hide();
+        setTimeout(() => {
+            $("#loader").hide();
+        }, 500);
         return deferred.promise();
     },
 });

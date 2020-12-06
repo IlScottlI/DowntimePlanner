@@ -1,21 +1,9 @@
-var month = [
-  { id: 1, text: "January" },
-  { id: 2, text: "February" },
-  { id: 3, text: "March" },
-  { id: 4, text: "April" },
-  { id: 5, text: "May" },
-  { id: 6, text: "June" },
-  { id: 7, text: "July" },
-  { id: 8, text: "August" },
-  { id: 9, text: "September" },
-  { id: 10, text: "October" },
-  { id: 11, text: "November" },
-  { id: 12, text: "December" },
-];
+var month = [];
 var recurrenceRule = { FREQ: "", BYDAY: "", COUNT: "", UNTIL: "", INTERVAL: "", BYMONTHDAY: "", BYMONTH: "" };
 var selectedRequest = {};
 var result = {};
 var questionsList = [];
+var freq = [];
 $.urlParam = function (name) {
   try {
     var results = new RegExp("[?&]" + name + "=([^&#]*)").exec(
@@ -26,8 +14,6 @@ $.urlParam = function (name) {
 };
 
 downtimeListURL = "https://graph.microsoft.com/v1.0/sites/892fe68e-73b7-4e17-9605-d2ac73dc2b3a,9e6927cb-2f3e-4189-8f92-f6733f30ff3b/lists/f39a4bd4-9ca3-42fb-97c8-70b53b5922ff/items";
-
-
 
 switch (window.location.pathname) {
   case "/DowntimePlanner/request.html":
@@ -90,12 +76,15 @@ function waitForLists(id) {
         editForm(id);
         $('#submitBtn').hide();
         $('#updateBtn').show();
-        $('#tabTitle').html(`Edit Request: <strong class="badge badge-light">${$.urlParam("id")}</strong>`);
+        $('#tabTitle').html(`${getTerm('editDTrequest')}: <strong class="badge badge-light">${$.urlParam("id")}</strong>`);
         $('#navOptions').show();
       } else {
         newForm();
         $('#submitBtn').show();
         $('#updateBtn').hide();
+        setInterval(() => {
+          $('#tabTitle').text();
+        }, 1);
         initilizeRepeat();
       }
       clearInterval(loadChecker);
@@ -104,6 +93,7 @@ function waitForLists(id) {
 }
 
 async function editForm(id) {
+  initilizeRepeat();
   await getListItem(id);
   let buIds, moduleIds, deptIds, areaIds;
   try {
@@ -136,9 +126,11 @@ async function editForm(id) {
   $('#reasonSelect').val(selectedRequest.reasonId).trigger('change');
   $('#form-eventStart').val(moment(selectedRequest.endDate).format("YYYY-MM-DDThh:mm"));
   $('#form-eventEnd').val(moment(selectedRequest.startDate).format("YYYY-MM-DDThh:mm"));
+  initilizeDatePickers(selectedRequest.startDate, selectedRequest.endDate);
   $('#form-Repeat').prop("checked", () => { try { return selectedRequest.recurrenceRule.length > 0 } catch (error) { return false } });
   try {
     if (selectedRequest.recurrenceRule.length > 0) {
+      initilizeRepeat();
       $('#repeatRow').show();
       let string = selectedRequest.recurrenceRule;
       let table = string.split(";").map(pair => pair.split("="));
@@ -153,7 +145,7 @@ async function editForm(id) {
         $('#form-onCheck').prop('checked', true);
         $('#form-endOn').prop("disabled", false);
         $('#form-afterCheck').prop("disabled", true);
-        $('#form-endOn').val(moment(`${result["UNTIL"].slice(0, 4)}-${result["UNTIL"].slice(4, 6)}-${result["UNTIL"].slice(6, 8)}`).format('YYYY-MM-DD'));
+        initilizeDatePickers(selectedRequest.startDate, selectedRequest.endDate, moment(`${result["UNTIL"].slice(0, 4)}-${result["UNTIL"].slice(4, 6)}-${result["UNTIL"].slice(6, 8)}`));
         calRepeat();
       }
       if (result["BYDAY"]) {
@@ -179,6 +171,7 @@ async function editForm(id) {
         $('#form-YearlyDay').val(result['BYMONTHDAY']);
       }
     }
+
   } catch (error) {
     // alertToast(error, 'Oh Snap!', 'error');
   }
@@ -189,6 +182,78 @@ async function editForm(id) {
 function newForm() {
   getUser();
   initilizeRepeat();
+  initilizeDatePickers();
+
+}
+
+function initilizeDatePickers(start, end, repeatEnd) {
+  if (start) {
+    let loopstart = setInterval(() => {
+      try {
+        $('#form-eventStart').daterangepicker({
+          "timePicker": true,
+          singleDatePicker: true,
+          showDropdowns: true,
+          "timePicker24Hour": true,
+          "locale": getPickerTerm().locale,
+          "startDate": moment(start)
+        })
+        $('#form-eventEnd').daterangepicker({
+          "timePicker": true,
+          singleDatePicker: true,
+          showDropdowns: true,
+          "timePicker24Hour": true,
+          "locale": getPickerTerm().locale,
+          "startDate": moment(end)
+        })
+        $('#form-endOn').daterangepicker({
+          "timePicker": false,
+          singleDatePicker: true,
+          showDropdowns: true,
+          "locale": getPickerTerm().locale,
+          "startDate": moment(repeatEnd)
+        })
+        if (getPickerTerm().locale) {
+          clearInterval(loopstart)
+        }
+      } catch (error) {
+
+      }
+    }, 100);
+  } else {
+    let loop = setInterval(() => {
+      try {
+        $('#form-eventStart').daterangepicker({
+          "timePicker": true,
+          singleDatePicker: true,
+          showDropdowns: true,
+          "timePicker24Hour": true,
+          "locale": getPickerTerm().locale,
+          "startDate": moment()
+        })
+        $('#form-eventEnd').daterangepicker({
+          "timePicker": true,
+          singleDatePicker: true,
+          showDropdowns: true,
+          "timePicker24Hour": true,
+          "locale": getPickerTerm().locale,
+          "startDate": moment().add(4, "hours")
+        })
+        $('#form-endOn').daterangepicker({
+          "timePicker": false,
+          singleDatePicker: true,
+          showDropdowns: true,
+          "locale": getPickerTerm().locale,
+          "startDate": moment()
+        })
+        if (getPickerTerm().locale) {
+          clearInterval(loop)
+        }
+      } catch (error) {
+
+      }
+    }, 100);
+  }
 }
 
 function getUser() {
@@ -206,27 +271,27 @@ function getUser() {
 function changeFrequency(val) {
   switch (val) {
     case "HOURLY":
-      $("#everyLabel").text("hour(s)");
+      $("#everyLabel").text(getTerm('hours'));
       $("#form-weekly").hide();
       $("#form-yearly").hide();
       break;
     case "DAILY":
-      $("#everyLabel").text("days(s)");
+      $("#everyLabel").text(getTerm('days'));
       $("#form-weekly").hide();
       $("#form-yearly").hide();
       break;
     case "WEEKLY":
-      $("#everyLabel").text("weeks(s)");
+      $("#everyLabel").text(getTerm('weeks'));
       $("#form-weekly").show();
       $("#form-yearly").hide();
       break;
     case "MONTHLY":
-      $("#everyLabel").text("months(s)");
+      $("#everyLabel").text(getTerm('months'));
       $("#form-weekly").hide();
       $("#form-yearly").hide();
       break;
     case "YEARLY":
-      $("#everyLabel").text("year(s)");
+      $("#everyLabel").text(getTerm('years'));
       $("#form-yearly").show();
       $("#form-weekly").hide();
       break;
@@ -254,7 +319,7 @@ function initilizeRepeat() {
     $(this).toggleClass("btn-primary");
     $(this).toggleClass("btn-light");
   });
-  $("#form-repeatFreq").select2({ minimumResultsForSearch: Infinity });
+  $("#form-repeatFreq").select2({ language: lang, minimumResultsForSearch: Infinity, data: freq });
   $("#repeatRow").hide();
   $("#form-endOn").prop("disabled", true);
   $("#form-endOn").val(moment().format("YYYY-MM-DD"));
@@ -268,13 +333,17 @@ function initilizeRepeat() {
       $("#repeatRow").hide();
     }
   });
+
   $("#form-YearlyMonth").select2({
+    language: lang,
     minimumResultsForSearch: Infinity,
     data: month,
   });
   $("#form-YearlyMonth").val(moment().format("M")).trigger("change");
+
   $('#form-YearlyDay').val(moment().format("D"));
   checkWeekday();
+
 }
 
 function calRepeat() {
@@ -291,8 +360,8 @@ function calRepeat() {
         recurrenceRule.INTERVAL = $('#interval').val();
       }
       if ($('#form-onCheck:checked').val()) {
-        string += `;UNTIL=${moment($('#form-endOn').val()).utc().format('YYYYMMDDTHHmmss')}Z`;
-        recurrenceRule.UNTIL = moment($('#form-endOn').val()).utc().format('YYYYMMDDTHHmmss') + "Z";
+        string += `;UNTIL=${moment($('#form-endOn').val(), getPickerTerm(localStorage.getItem('lang')).locale.format).utc().format('YYYYMMDDTHHmmss')}Z`;
+        recurrenceRule.UNTIL = moment($('#form-endOn').val(), getPickerTerm(localStorage.getItem('lang')).locale.format).utc().format('YYYYMMDDTHHmmss') + "Z";
       }
       if ($('#form-after-btn:checked').val()) {
         string += `;COUNT=${$('#form-afterCheck').val()}`;
@@ -305,8 +374,8 @@ function calRepeat() {
         recurrenceRule.INTERVAL = $('#interval').val();
       }
       if ($('#form-onCheck:checked').val()) {
-        string += `;UNTIL=${moment($('#form-endOn').val()).utc().format('YYYYMMDDTHHmmss')}Z`;
-        recurrenceRule.UNTIL = moment($('#form-endOn').val()).utc().format('YYYYMMDDTHHmmss') + "Z";
+        string += `;UNTIL=${moment($('#form-endOn').val(), getPickerTerm(localStorage.getItem('lang')).locale.format).utc().format('YYYYMMDDTHHmmss')}Z`;
+        recurrenceRule.UNTIL = moment($('#form-endOn').val(), getPickerTerm(localStorage.getItem('lang')).locale.format).utc().format('YYYYMMDDTHHmmss') + "Z";
       }
       if ($('#form-after-btn:checked').val()) {
         string += `;COUNT=${$('#form-afterCheck').val()}`;
@@ -327,8 +396,8 @@ function calRepeat() {
         recurrenceRule.BYDAY = arr.join(',');
       }
       if ($('#form-onCheck:checked').val()) {
-        string += `;UNTIL=${moment($('#form-endOn').val()).utc().format('YYYYMMDDTHHmmss')}Z`;
-        recurrenceRule.UNTIL = moment($('#form-endOn').val()).utc().format('YYYYMMDDTHHmmss') + "Z";
+        string += `;UNTIL=${moment($('#form-endOn').val(), getPickerTerm(localStorage.getItem('lang')).locale.format).utc().format('YYYYMMDDTHHmmss')}Z`;
+        recurrenceRule.UNTIL = moment($('#form-endOn').val(), getPickerTerm(localStorage.getItem('lang')).locale.format).utc().format('YYYYMMDDTHHmmss') + "Z";
       }
       if ($('#form-after-btn:checked').val()) {
         string += `;COUNT=${$('#form-afterCheck').val()}`;
@@ -341,8 +410,8 @@ function calRepeat() {
         recurrenceRule.INTERVAL = $('#interval').val();
       }
       if ($('#form-onCheck:checked').val()) {
-        string += `;UNTIL=${moment($('#form-endOn').val()).utc().format('YYYYMMDDTHHmmss')}Z`;
-        recurrenceRule.UNTIL = moment($('#form-endOn').val()).utc().format('YYYYMMDDTHHmmss') + "Z";
+        string += `;UNTIL=${moment($('#form-endOn').val(), getPickerTerm(localStorage.getItem('lang')).locale.format).utc().format('YYYYMMDDTHHmmss')}Z`;
+        recurrenceRule.UNTIL = moment($('#form-endOn').val(), getPickerTerm(localStorage.getItem('lang')).locale.format).utc().format('YYYYMMDDTHHmmss') + "Z";
       }
       if ($('#form-after-btn:checked').val()) {
         string += `;COUNT=${$('#form-afterCheck').val()}`;
@@ -360,8 +429,8 @@ function calRepeat() {
         recurrenceRule.BYMONTH = $("#form-YearlyMonth").val();
       }
       if ($('#form-onCheck:checked').val()) {
-        string += `;UNTIL=${moment($('#form-endOn').val()).utc().format('YYYYMMDDTHHmmss')}Z`;
-        recurrenceRule.UNTIL = moment($('#form-endOn').val()).utc().format('YYYYMMDDTHHmmss') + "Z";
+        string += `;UNTIL=${moment($('#form-endOn').val(), getPickerTerm(localStorage.getItem('lang')).locale.format).utc().format('YYYYMMDDTHHmmss')}Z`;
+        recurrenceRule.UNTIL = moment($('#form-endOn').val(), getPickerTerm(localStorage.getItem('lang')).locale.format).utc().format('YYYYMMDDTHHmmss') + "Z";
       }
       if ($('#form-after-btn:checked').val()) {
         string += `;COUNT=${$('#form-afterCheck').val()}`;
@@ -410,8 +479,8 @@ function submitForm() {
     reasonId: $('#reasonSelect').val().join(','),
     statusId: '1',
     Approvers: 'johnson.se@pg.com;rosenlof.r@pg.com',
-    startDate: $('#form-eventStart').val(),
-    endDate: $('#form-eventEnd').val(),
+    startDate: moment($('#form-eventStart').val(), getPickerTerm(localStorage.getItem('lang')).locale.format).format('YYYY-MM-DD HH:mm'),
+    endDate: moment($('#form-eventEnd').val(), getPickerTerm(localStorage.getItem('lang')).locale.format).format('YYYY-MM-DD HH:mm'),
     recurrenceRule: $('#repeatString').val(),
     FREQ: recurrenceRule.FREQ,
     BYDAY: recurrenceRule.BYDAY,
@@ -460,8 +529,8 @@ function updateForm() {
     reasonId: $('#reasonSelect').val().join(','),
     statusId: '1',
     Approvers: '',
-    startDate: $('#form-eventStart').val(),
-    endDate: $('#form-eventEnd').val(),
+    startDate: moment($('#form-eventStart').val(), getPickerTerm(localStorage.getItem('lang')).locale.format).format('YYYY-MM-DD HH:mm'),
+    endDate: moment($('#form-eventEnd').val(), getPickerTerm(localStorage.getItem('lang')).locale.format).format('YYYY-MM-DD HH:mm'),
     recurrenceRule: $('#repeatString').val(),
     FREQ: recurrenceRule.FREQ,
     BYDAY: recurrenceRule.BYDAY,

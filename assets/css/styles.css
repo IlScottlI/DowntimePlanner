@@ -73,18 +73,6 @@ body {
   margin: 0px 0px 0px 0px;
 }
 
-.calendar-day {
-  width: 100px;
-  min-width: 100px;
-  max-width: 100px;
-  height: 80px;
-}
-
-.calendar-table {
-  margin: 0 auto;
-  width: 700px;
-}
-
 .selected {
   background-color: #eee;
 }

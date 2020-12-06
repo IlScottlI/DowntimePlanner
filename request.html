@@ -8,6 +8,7 @@
     <link rel="icon" type="image/png" sizes="100x100" href="assets/img/plantIcon.png">
     <link rel="icon" type="image/png" sizes="100x100" href="assets/img/plantIcon.png">
     <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Sans+Pro:wght@300;400;700&amp;display=swap">
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Cookie">
     <link rel="stylesheet" href="assets/fonts/font-awesome.min.css">
     <link rel="stylesheet" href="assets/fonts/simple-line-icons.min.css">
@@ -15,11 +16,14 @@
     <link rel="stylesheet" href="https://cdn3.devexpress.com/jslib/20.2.3/css/dx.light.compact.css">
     <link rel="stylesheet" href="assets/css/select2.min.css">
     <link rel="stylesheet" href="assets/css/untitled.css">
+    <link rel="stylesheet" href="assets/css/daterangepicker.css">
 <!-- msal.min.js can be used in the place of msal.js; included msal.js to make debug easy -->
     <script src="https://alcdn.msauth.net/browser/2.1.0/js/msal-browser.js"
         integrity="sha384-M9bRB06LdiYadS+F9rPQnntFCYR3UJvtb2Vr4Tmhw9WBwWUfxH8VDRAFKNn3VTc/"
         crossorigin="anonymous"></script>
 
+
+</script>
     <!-- msal.js with a fallback to backup CDN -->
     <script type="text/javascript">
         if ( typeof Msal === 'undefined' ) document.write( unescape( "%3Cscript src='https://alcdn.msftauth.net/browser/2.1.0/js/msal-browser.js' type='text/javascript' crossorigin='anonymous' %3E%3C/script%3E" ) );
@@ -34,12 +38,12 @@
     <div id="loader" class="h-100">
         <div class="text-center d-xl-flex justify-content-xl-center align-items-xl-center"><img id="loadingGIF-1" src="assets/img/plantIcon.png"></div>
         <div class="d-xl-flex justify-content-xl-center align-items-xl-center">
-            <h4 class="text-center text-light mt-auto">Downtime Planner</h4>
+            <h4 class="text-center text-light mt-auto appTitle">Downtime Planner</h4>
         </div>
         <div class="text-center d-xl-flex justify-content-xl-center"><img src="assets/img/loading-13.gif"></div>
     </div>
     <nav class="navbar navbar-light navbar-expand-md bg-light">
-        <div class="container-fluid"><a class="navbar-brand" href="index.html"><img class="rounded-circle" src="assets/img/plantIcon.png" width="45px"><h3>Downtime Planner</h3><br></a></div>
+        <div class="container-fluid"><a class="navbar-brand" href="index.html"><img class="rounded-circle" src="assets/img/plantIcon.png" width="45px"><h3 class="appTitle">Downtime Planner</h3><br></a></div>
     </nav>
     <nav class="navbar navbar-dark navbar-expand-md bg-dark">
         <div class="container-fluid"><a class="navbar-brand" href="index.html"><i class="icon-home"></i></a>
@@ -51,12 +55,22 @@
 </svg></a></li>
                     <li class="nav-item"><a class="nav-link active" id="plantName" href="switcher.html"></a></li>
                 </ul>
+                <ul class="nav navbar-nav mx-auto" id="links">
+                    <li class="nav-item"><a class="nav-link active newRequest" href="request.html">New Request</a></li>
+                    <li class="nav-item"><a class="nav-link viewRequest" href="view.html">View Requests</a></li>
+                    <li class="nav-item"><a class="nav-link dtCalendar" href="scheduler.html">DT Calendar</a></li>
+                    <li class="nav-item"><a class="nav-link dtDashboard" href="#">DT Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link approvals" href="#"><span class="badge badge-light approvalCount">0</span>&nbsp; Approvals</a></li>
+                </ul>
+            </div>
+            <div class="dropdown mx-auto"><a class="dropdown-toggle text-light" data-toggle="dropdown" aria-expanded="false"><i class="fa fa-language mr-2" style="color: #fefefe;"></i></a>
+                <div class="dropdown-menu" id="langMenu"></div>
             </div><mgt-login show-presence class="styled-person"> </mgt-login>
 </div>
     </nav>
     <div class="container-fluid" style="padding-top: 15px;">
         <div class="row" style="margin-top: -15px;">
-            <div class="col offset-xl-0 p-2" id="navOptions" style="display: none;"><button class="btn btn-outline-primary btn-sm pl-3 pr-3 ml-3" type="button" style="border-radius: 20px;color: #121a4f;border-color: #121a4f;padding: 0px;" onclick="navBack();">Back</button></div>
+            <div class="col offset-xl-0 p-2" id="navOptions" style="display: none;"><button class="btn btn-outline-primary btn-sm pl-3 pr-3 ml-3 back" type="button" style="border-radius: 20px;color: #121a4f;border-color: #121a4f;padding: 0px;" onclick="navBack();">Back</button></div>
         </div>
         <div>
             <ul class="nav nav-tabs" role="tablist">
@@ -67,69 +81,71 @@
                     <div class="card">
                         <div class="card-body">
                             <div class="row">
-                                <div class="col-xl-8"><label>* Project Name<br></label><input class="form-control-sm w-100 text-input" type="text" id="form-Title" autocomplete="on"></div>
-                                <div class="col"><label>* Downtime Owner</label><mgt-people-picker selection-mode="single" id="form-Owner"></mgt-people-picker></div>
+                                <div class="col-xl-8"><label class="projectName">* Project Name<br></label><input class="form-control-sm w-100 text-input" type="text" id="form-Title" autocomplete="on"></div>
+                                <div class="col"><label class="dtOwner">* Downtime Owner</label><mgt-people-picker selection-mode="single" id="form-Owner"></mgt-people-picker></div>
                             </div>
                             <div class="row">
-                                <div class="col-12 col-xl-3"><label>* Business&nbsp;</label>
+                                <div class="col-12 col-xl-3"><label class="business">* Business&nbsp;</label>
                                     <div class="form-group"><select class="custom-select custom-select-sm" id="buSelect"></select></div>
                                 </div>
-                                <div class="col-12 col-xl-3"><label>Module</label>
+                                <div class="col-12 col-xl-3"><label class="module">Module</label>
                                     <div class="form-group"><select class="custom-select custom-select-sm" id="moduleSelect"></select></div>
                                 </div>
-                                <div class="col-12 col-xl-3"><label>Department</label>
+                                <div class="col-12 col-xl-3"><label class="department">Department</label>
                                     <div class="form-group"><select class="custom-select custom-select-sm" id="deptSelect"></select></div>
                                 </div>
-                                <div class="col"><label>Area</label>
+                                <div class="col"><label class="area">Area</label>
                                     <div class="form-group"><select class="custom-select custom-select-sm" id="areaSelect"></select></div>
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-xl-3"><label>* Type of Request<br></label>
+                                <div class="col-xl-3"><label class="requestType">* Type of Request<br></label>
                                     <div class="form-group"><select class="custom-select custom-select-sm" id="typeSelect"></select></div>
                                 </div>
-                                <div class="col-xl-3"><label>* Downtime Reason Code<br></label>
+                                <div class="col-xl-3"><label class="dtReasonCode">* Downtime Reason Code<br></label>
                                     <div class="form-group"><select class="custom-select custom-select-sm" id="reasonSelect"></select></div>
                                 </div>
-                                <div class="col"><label class="d-block">* Start</label>
-                                    <div class="form-group"><input id="form-eventStart" class="w-100 small" type="datetime-local" required=""></div>
+                                <div class="col"><label class="d-block dateStart">* Start</label>
+                                    <div class="form-group"><input id="form-eventStart" class="w-100 dateTimePicker" required=""></div>
                                 </div>
-                                <div class="col"><label class="d-block">* End</label>
-                                    <div class="form-group"><input id="form-eventEnd" class="w-100 small" type="datetime-local" required=""></div>
+                                <div class="col"><label class="d-block dateEnd">* End</label>
+                                    <div class="form-group"><input id="form-eventEnd" class="w-100 dateTimePicker" required=""></div>
                                 </div>
                                 <div class="col-12 col-sm-12 col-xl-1"><div class="toggle">
   <input type="checkbox" class="check" id="form-Repeat" />
   <b class="b switch"></b>
   <b class="b track"></b>
 </div>
-<label>Repeat</label></div>
+<label class="repeat">Repeat</label></div>
                             </div>
                             <div class="row" id="repeatRow">
-                                <div class="col-xl-2"><label>Repeat<br></label>
-                                    <div class="form-group"><select class="custom-select custom-select-sm" id="form-repeatFreq" onchange="changeFrequency(this.value);calRepeat();"><option value="HOURLY">Hourly</option><option value="DAILY">Daily</option><option value="WEEKLY" selected="">Weekly</option><option value="MONTHLY">Monthly</option><option value="YEARLY">Yearly</option></select></div>
+                                <div class="col-xl-2"><label class="frequency">Repeat<br></label>
+                                    <div class="form-group"><select class="custom-select custom-select-sm" id="form-repeatFreq" onchange="changeFrequency(this.value);calRepeat();"></select></div>
                                 </div>
-                                <div class="col-xl-2"><label>Every<br></label>
+                                <div class="col-xl-2"><label class="every">Every<br></label>
                                     <div class="form-group"><input type="number" id="interval" style="width: 30%;padding: 4px 0px 4px 10px;" min="1" value="1"><label id="everyLabel" style="padding-left: 10px;">week(s)</label></div>
                                 </div>
                                 <div class="col-xl-3 offset-xl-0">
-                                    <form><label>End repeat</label>
+                                    <form><label class="endRepeat">End repeat</label>
                                         <div class="form-group">
-                                            <div class="custom-control custom-radio"><input class="custom-control-input" type="radio" id="form-repeatNever" checked="" name="repeat" value="never" onclick="$(&#39;#form-endOn&#39;).prop(&quot;disabled&quot;, true);$(&#39;#form-afterCheck&#39;).prop(&quot;disabled&quot;, true);"><label class="custom-control-label" for="form-repeatNever" onclick="$(&#39;#form-endOn&#39;).prop(&quot;disabled&quot;, true);$(&#39;#form-afterCheck&#39;).prop(&quot;disabled&quot;, true);">Never</label></div>
+                                            <div class="custom-control custom-radio"><input class="custom-control-input" type="radio" id="form-repeatNever" checked="" name="repeat" value="never" onclick="$(&#39;#form-endOn&#39;).prop(&quot;disabled&quot;, true);$(&#39;#form-afterCheck&#39;).prop(&quot;disabled&quot;, true);"><label class="custom-control-label never" for="form-repeatNever" onclick="$(&#39;#form-endOn&#39;).prop(&quot;disabled&quot;, true);$(&#39;#form-afterCheck&#39;).prop(&quot;disabled&quot;, true);">Never</label></div>
                                         </div>
                                         <div class="form-group">
-                                            <div class="custom-control custom-radio d-inline-block"><input class="custom-control-input" type="radio" id="form-onCheck" name="repeat" onclick="$(&#39;#form-endOn&#39;).prop(&quot;disabled&quot;, false);$(&#39;#form-afterCheck&#39;).prop(&quot;disabled&quot;, true);"><label class="custom-control-label" for="form-onCheck" onclick="$(&#39;#form-endOn&#39;).prop(&quot;disabled&quot;, false);$(&#39;#form-afterCheck&#39;).prop(&quot;disabled&quot;, true);">On&nbsp; &nbsp;&nbsp;</label></div><input class="form-control form-control-sm d-inline-block"
-                                                id="form-endOn" type="date" style="width: 50%;" onclick="$(&#39;#form-onCheck&#39;).click();$(&#39;#form-endOn&#39;).prop(&quot;disabled&quot;, false);"></div>
+                                            <div class="custom-control custom-radio d-inline-block"><input class="custom-control-input" type="radio" id="form-onCheck" name="repeat" onclick="$(&#39;#form-endOn&#39;).prop(&quot;disabled&quot;, false);$(&#39;#form-afterCheck&#39;).prop(&quot;disabled&quot;, true);"><label class="custom-control-label on" for="form-onCheck" onclick="$(&#39;#form-endOn&#39;).prop(&quot;disabled&quot;, false);$(&#39;#form-afterCheck&#39;).prop(&quot;disabled&quot;, true);">On&nbsp; &nbsp;&nbsp;</label></div>
+                                            <input
+                                                class="form-control dateTimePicker" id="form-endOn" required="" style="width: 50% !important;display: inline-block;"></div>
                                         <div class="form-group">
-                                            <div class="custom-control custom-radio d-inline-block"><input class="custom-control-input" type="radio" id="form-after-btn" name="repeat" value="after" onclick="$(&#39;#form-endOn&#39;).prop(&quot;disabled&quot;, true);$(&#39;#form-afterCheck&#39;).prop(&quot;disabled&quot;, false);"><label class="custom-control-label" for="form-after-btn" onclick="$(&#39;#form-endOn&#39;).prop(&quot;disabled&quot;, true);$(&#39;#form-afterCheck&#39;).prop(&quot;disabled&quot;, false);">After&nbsp; &nbsp;</label></div>
+                                            <div class="custom-control custom-radio d-inline-block"><input class="custom-control-input" type="radio" id="form-after-btn" name="repeat" value="after" onclick="$(&#39;#form-endOn&#39;).prop(&quot;disabled&quot;, true);$(&#39;#form-afterCheck&#39;).prop(&quot;disabled&quot;, false);"><label class="custom-control-label after" for="form-after-btn" onclick="$(&#39;#form-endOn&#39;).prop(&quot;disabled&quot;, true);$(&#39;#form-afterCheck&#39;).prop(&quot;disabled&quot;, false);">After&nbsp; &nbsp;</label></div>
                                             <input
                                                 class="form-control d-inline-block" type="number" id="form-afterCheck" style="width: 20%;padding: 4px 0px 4px 10px;" min="1" value="1"></div>
                                     </form>
                                 </div>
-                                <div class="col" id="form-weekly"><label>Repeat On</label>
+                                <div class="col" id="form-weekly"><label class="repeatOn">Repeat On</label>
                                     <div class="btn-toolbar">
-                                        <div class="btn-group" role="group" id="form-weeklyRepeat" onclick="checkWeekday();calRepeat();"><button class="btn btn-light weekday" id="SU" type="button">Sun</button><button class="btn btn-light weekday" id="MO" type="button">Mon</button><button class="btn btn-light weekday" id="TU" type="button">Tue</button>
+                                        <div class="btn-group" role="group" id="form-weeklyRepeat" onclick="checkWeekday();calRepeat();"><button class="btn btn-light weekday sun" id="SU" type="button">Sun</button><button class="btn btn-light weekday mon" id="MO" type="button">Mon</button><button class="btn btn-light weekday tue" id="TU" type="button">Tue</button>
                                             <button
-                                                class="btn btn-light weekday" id="WE" type="button">Wed</button><button class="btn btn-light weekday" id="TH" type="button">Thu</button><button class="btn btn-light weekday" id="FR" type="button">Fri</button><button class="btn btn-light weekday" id="SA" type="button">Sat</button></div>
+                                                class="btn btn-light weekday wed" id="WE" type="button">Wed</button><button class="btn btn-light weekday thu" id="TH" type="button">Thu</button><button class="btn btn-light weekday fri" id="FR" type="button">Fri</button><button class="btn btn-light weekday sat" id="SA"
+                                                    type="button">Sat</button></div>
                                     </div>
                                 </div>
                                 <div class="col-xl-3" id="form-yearly"><label>Repeat On</label>
@@ -149,7 +165,7 @@
                             </div>
                             <div class="row" id="questions"></div>
                         </div>
-                        <div class="card-footer d-xl-flex justify-content-xl-end"><button class="btn btn-success pl-4 pr-4" id="updateBtn" type="button" onclick="updateForm();" style="display: none;">Update</button><button class="btn btn-primary pl-4 pr-4" id="submitBtn" type="button" onclick="submitForm();">Submit</button></div>
+                        <div class="card-footer d-xl-flex justify-content-xl-end"><button class="btn btn-success pl-4 pr-4" id="updateBtn" type="button" onclick="updateForm();" style="display: none;">Update</button><button class="btn btn-primary pl-4 pr-4 submit" id="submitBtn" type="button" onclick="submitForm();">Submit</button></div>
                     </div>
                 </div>
             </div>
@@ -157,13 +173,18 @@
     </div>
     <script src="assets/js/jquery.min.js"></script>
     <script src="assets/bootstrap/js/bootstrap.min.js"></script>
-    <script src="assets/js/dx.all.js"></script>
     <script src="assets/js/moment.js"></script>
+    <script src="assets/js/daterangepicker.min.js"></script>
+    <script src="assets/js/lang.js"></script>
+    <script src="assets/js/dx.all.js"></script>
+    <script src="assets/js/dx.messages.ru.js"></script>
+    <script src="assets/js/dx.messages.de.js"></script>
     <script src="assets/js/select2.full.min.js"></script>
     <script src="assets/js/index.js"></script>
     <script src="assets/js/data.js"></script>
     <script src="assets/js/request.js"></script>
     <script src="assets/js/view.js"></script>
+    <script src="assets/js/switcher.js"></script>
 </body>
 
 </html>
