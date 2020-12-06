@@ -129,6 +129,22 @@ async function editForm(id) {
   initilizeDatePickers(selectedRequest.startDate, selectedRequest.endDate);
   $('#form-Repeat').prop("checked", () => { try { return selectedRequest.recurrenceRule.length > 0 } catch (error) { return false } });
   try {
+    $('#form-approver').text('')
+    selectedRequest.Approvers.split(';').forEach(element => {
+      $('#form-approver').append(`<div class="col-3 m-2" > <mgt-person person-query="${element}" view="oneLine" person-card="hover" show-presence></mgt-person></div>`)
+    });
+
+  } catch (error) {
+
+  }
+  try {
+    $('#form-contributor').html(`<mgt-people-picker default-selected-user-ids="" id="selected-contributor"></mgt-people-picker>`)
+    $('#form-contributor').html(` <mgt-people-picker  id="selected-contributor" default-selected-user-ids="${selectedRequest.Contributor.split(';').join(',')}" show-presence></mgt-people-picker>`)
+
+  } catch (error) {
+
+  }
+  try {
     if (selectedRequest.recurrenceRule.length > 0) {
       initilizeRepeat();
       $('#repeatRow').show();
@@ -513,6 +529,27 @@ function submitForm() {
 }
 
 function updateForm() {
+  let contributor = ''
+  let approver = ''
+  try {
+    let newArr = []
+    $('#form-approver mgt-person').toArray().forEach((e) => {
+      newArr.push(e.attributes.getNamedItem('person-query').value);
+    })
+    approver = newArr.join(';')
+  } catch (error) {
+
+  }
+  try {
+    let newArr = []
+    document.querySelector('#selected-contributor').selectedPeople.forEach((e) => {
+      newArr.push(e.mail)
+    })
+    contributor = newArr.join(';')
+  } catch (error) {
+
+  }
+
   // Modal Popup Here
   $("#loader").show();
   let token = getAccessToken();
@@ -528,7 +565,8 @@ function updateForm() {
     typeId: $('#typeSelect').val().join(','),
     reasonId: $('#reasonSelect').val().join(','),
     statusId: '1',
-    Approvers: '',
+    Approvers: approver,
+    Contributor: contributor,
     startDate: moment($('#form-eventStart').val(), getPickerTerm(localStorage.getItem('lang')).locale.format).format('YYYY-MM-DD HH:mm'),
     endDate: moment($('#form-eventEnd').val(), getPickerTerm(localStorage.getItem('lang')).locale.format).format('YYYY-MM-DD HH:mm'),
     recurrenceRule: $('#repeatString').val(),
