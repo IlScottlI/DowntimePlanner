@@ -537,18 +537,21 @@ function updateForm() {
       newArr.push(e.attributes.getNamedItem('person-query').value);
     })
     approver = newArr.join(';')
+    console.log(approver)
   } catch (error) {
 
   }
   try {
     let newArr = []
     document.querySelector('#selected-contributor').selectedPeople.forEach((e) => {
-      newArr.push(e.mail)
+      newArr.push(e.userPrincipalName)
     })
     contributor = newArr.join(';')
+    console.log(contributor)
   } catch (error) {
 
   }
+
 
   // Modal Popup Here
   $("#loader").show();
